@@ -24,10 +24,19 @@ vbdSetMode(1);
 //initialize simulation inputs
 top->clk = 1;
 top->rst = 1;
-top->en = 0;
+top->v = 0;
+top->ld = 0;
 
 //run simulation for many clock cycles 
 for (i=0; i<500; i++){
+
+    //Set the ld signal to high when vbdFlag goes high
+    if(vbdFlag()){
+        top->ld = 1;
+    }
+
+    //Set the value v to the parameter value on Vbuddy set by the rotary encoder
+    top->v = vbdValue();
 
     //dump variables into VCD file and toggle clock
     for(clk=0; clk<2; clk++) {
@@ -35,11 +44,6 @@ for (i=0; i<500; i++){
         top->clk = !top->clk;
         top->eval ();
     }
-
-    //Code for loadable counter, changes the counter to Vbuddy’s stored parameter value.
-    if(vbdFlag()){
-        (top->count) = vbdValue();
-    }  
 
     //++++ Send count value to Vbuddy
     vbdHex(4, (int(top->count) >> 16) & 0xF);
@@ -50,8 +54,8 @@ for (i=0; i<500; i++){
     //---- end of Vbuddy output section
 
     //change input stimuli
-    top->rst = (i<2) | (i == 0);
-    top->en = (i>4);
+    top->rst = (i<0) | (i == 0);
+    top->ld = 0;
     if (Verilated::gotFinish()) exit(0);
 }
 

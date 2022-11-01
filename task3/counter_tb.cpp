@@ -24,13 +24,19 @@ vbdSetMode(1);
 //initialize simulation inputs
 top->clk = 1;
 top->rst = 1;
-top->en = 0;
+top->v = 0;
+top->ld = 0;
 
 //run simulation for many clock cycles 
 for (i=0; i<500; i++){
 
-    //Wait until vbdFlag is HIGH before proceeding
-    while(!vbdFlag()){}
+    //Set the ld signal to high when vbdFlag goes high
+    if(vbdFlag()){
+        top->ld = 1;
+    }
+
+    //Set the value v to the parameter value on Vbuddy set by the rotary encoder
+    top->v = vbdValue();
 
     //dump variables into VCD file and toggle clock
     for(clk=0; clk<2; clk++) {
@@ -49,7 +55,7 @@ for (i=0; i<500; i++){
 
     //change input stimuli
     top->rst = (i<0) | (i == 0);
-    top->en = (i>0);
+    top->ld = 0;
     if (Verilated::gotFinish()) exit(0);
 }
 
