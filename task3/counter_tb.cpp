@@ -24,7 +24,6 @@ vbdSetMode(1);
 //initialize simulation inputs
 top->clk = 1;
 top->rst = 1;
-top->v = 0;
 top->ld = 0;
 
 //run simulation for many clock cycles 
@@ -34,9 +33,6 @@ for (i=0; i<500; i++){
     if(vbdFlag()){
         top->ld = 1;
     }
-
-    //Set the value v to the parameter value on Vbuddy set by the rotary encoder
-    top->v = vbdValue();
 
     //dump variables into VCD file and toggle clock
     for(clk=0; clk<2; clk++) {
